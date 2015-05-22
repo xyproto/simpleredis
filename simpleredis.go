@@ -226,6 +226,11 @@ func (rl *List) Remove() error {
 	return err
 }
 
+// Clear the contents
+func (rl *List) Clear() error {
+	return rl.Remove()
+}
+
 /* --- Set functions --- */
 
 // Create a new set
@@ -278,6 +283,11 @@ func (rs *Set) Remove() error {
 	conn := rs.pool.Get(rs.dbindex)
 	_, err := conn.Do("DEL", rs.id)
 	return err
+}
+
+// Clear the contents
+func (rs *Set) Clear() error {
+	return rs.Remove()
 }
 
 /* --- HashMap functions --- */
@@ -369,6 +379,11 @@ func (rh *HashMap) Remove() error {
 	return nil
 }
 
+// Clear the contents
+func (rh *HashMap) Clear() error {
+	return rh.Remove()
+}
+
 /* --- KeyValue functions --- */
 
 // Create a new key/value
@@ -433,6 +448,11 @@ func (rkv *KeyValue) Remove() error {
 		}
 	}
 	return nil
+}
+
+// Clear the contents
+func (rkv *KeyValue) Clear() error {
+	return rkv.Remove()
 }
 
 // --- Generic redis functions ---

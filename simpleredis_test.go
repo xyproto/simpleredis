@@ -1,6 +1,7 @@
 package simpleredis
 
 import (
+	"github.com/xyproto/pinterface"
 	"testing"
 )
 
@@ -41,6 +42,10 @@ func TestList(t *testing.T) {
 		testdata = "123abc"
 	)
 	list := NewList(pool, listname)
+
+	// Check that the list qualifies for the IList interface
+	var _ pinterface.IList = list
+
 	list.SelectDatabase(1)
 	if err := list.Add(testdata); err != nil {
 		t.Errorf("Error, could not add item to list! %s", err.Error())
@@ -65,6 +70,11 @@ func TestRemove(t *testing.T) {
 		testvalue = "asdfasdf1234"
 	)
 	kv := NewKeyValue(pool, kvname)
+
+	// TODO: Also do this check for ISet and IHashMap
+	// Check that the key/value qualifies for the IKeyValue interface
+	var _ pinterface.IKeyValue = kv
+
 	kv.SelectDatabase(1)
 	if err := kv.Set(testkey, testvalue); err != nil {
 		t.Errorf("Error, could not set key and value! %s", err.Error())
