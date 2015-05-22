@@ -9,6 +9,11 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+const (
+	// Version number. Stable API within major version numbers.
+	Version = 1.1
+)
+
 // Common for each of the redis datastructures used here
 type redisDatastructure struct {
 	pool    *ConnectionPool
@@ -27,8 +32,6 @@ type (
 )
 
 const (
-	// Version number. Stable API within major version numbers.
-	Version = 1.0
 	// The default [url]:port that Redis is running at
 	defaultRedisServer = ":6379"
 )
@@ -152,11 +155,11 @@ func (pool *ConnectionPool) Get(dbindex int) redis.Conn {
 }
 
 // Ping the server by sending a PING command
-func (pool *ConnectionPool) Ping() (pong bool) {
+func (pool *ConnectionPool) Ping() error {
 	redisPool := redis.Pool(*pool)
 	conn := redisPool.Get()
 	_, err := conn.Do("PING")
-	return err == nil
+	return err
 }
 
 // Close down the connection pool

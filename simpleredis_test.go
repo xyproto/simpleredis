@@ -29,7 +29,7 @@ func TestConnectionPoolHost(t *testing.T) {
 // Tests with password "foobared" if the previous connection test
 // did not result in a connection that responds to PING.
 func TestConnectionPoolHostPassword(t *testing.T) {
-	if !pool.Ping() {
+	if pool.Ping() != nil {
 		// Try connecting with the default password
 		pool = NewConnectionPoolHost("foobared@localhost:6379")
 	}
