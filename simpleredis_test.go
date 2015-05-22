@@ -142,3 +142,8 @@ func TestTwoFields(t *testing.T) {
 		t.Error("Error in twoFields functions")
 	}
 }
+
+func TestICreator(t *testing.T) {
+	// Check if the struct comforms to ICreator
+	var _ pinterface.ICreator = NewCreator(pool, 1)
+}
