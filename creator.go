@@ -15,6 +15,10 @@ func NewCreator(pool *ConnectionPool, dbindex int) *RedisCreator {
 	return &RedisCreator{pool, dbindex}
 }
 
+func (c *RedisCreator) SelectDatabase(dbindex int) {
+	c.dbindex = dbindex
+}
+
 func (c *RedisCreator) NewList(id string) pinterface.IList {
 	return &List{c.pool, id, c.dbindex}
 }
