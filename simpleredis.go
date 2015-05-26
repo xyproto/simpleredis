@@ -11,7 +11,7 @@ import (
 
 const (
 	// Version number. Stable API within major version numbers.
-	Version = 1.2
+	Version = 2.0
 )
 
 // Common for each of the redis datastructures used here
