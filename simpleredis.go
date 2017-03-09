@@ -324,6 +324,16 @@ func (rs *Set) Add(value string) error {
 	return err
 }
 
+// Returns the set cardinality (number of elements) of the set
+func (rs *Set) Size() (int64, error) {
+	conn := rs.pool.Get(rs.dbindex)
+	size, err := conn.Do("SCARD", rs.id)
+	if err != nil {
+		panic(err)
+	}
+	return redis.Int64(size, err)
+}
+
 // Check if a given value is in the set
 func (rs *Set) Has(value string) (bool, error) {
 	conn := rs.pool.Get(rs.dbindex)
@@ -343,6 +353,26 @@ func (rs *Set) GetAll() ([]string, error) {
 		strs[i] = getString(result, i)
 	}
 	return strs, err
+}
+
+// Remove a random member from the set
+func (rs *Set) Pop() (string, error) {
+	conn := rs.pool.Get(rs.dbindex)
+	result, err := conn.Do("SPOP", rs.id)
+	if err != nil {
+		panic(err)
+	}
+	return redis.String(result, err)
+}
+
+// Get a random member of the set
+func (rs *Set) Random() (string, error) {
+	conn := rs.pool.Get(rs.dbindex)
+	result, err := conn.Do("SRANDMEMBER", rs.id)
+	if err != nil {
+		panic(err)
+	}
+	return redis.String(result, err)
 }
 
 // Remove an element from the set
