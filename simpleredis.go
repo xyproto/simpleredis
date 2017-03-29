@@ -81,6 +81,9 @@ func TestConnectionHost(hostColonPort string) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = errors.New("Could not connect to redis server: " + hostColonPort)
+			if conn != nil {
+				conn.Close()
+			}
 		}
 	}()
 	return err
