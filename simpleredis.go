@@ -3,8 +3,10 @@ package simpleredis
 
 import (
 	"errors"
+	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -40,6 +42,10 @@ var (
 	// How many connections should stay ready for requests, at a maximum?
 	// When an idle connection is used, new idle connections are created.
 	maxIdleConnections = 3
+
+	ConnectTimeout = 1 * time.Second
+	ReadTimeout    = 1 * time.Second
+	WriteTimeout   = 1 * time.Second
 )
 
 /* --- Helper functions --- */
@@ -52,12 +58,20 @@ func newRedisConnection() (redis.Conn, error) {
 // Connect to host:port, host may be omitted, so ":6379" is valid.
 // Will not try to AUTH with any given password (password@host:port).
 func newRedisConnectionTo(hostColonPort string) (redis.Conn, error) {
+	log.Println("TRYING TO CONNECT TO ", hostColonPort)
 	// Discard the password, if provided
 	if _, theRest, ok := twoFields(hostColonPort, "@"); ok {
 		hostColonPort = theRest
 	}
 	hostColonPort = strings.TrimSpace(hostColonPort)
-	return redis.Dial("tcp", hostColonPort)
+	if c, err := redis.DialTimeout("tcp", hostColonPort, ConnectTimeout, ReadTimeout, WriteTimeout); err != nil {
+		if c != nil {
+			c.Close()
+		}
+		return nil, err
+	} else {
+		return c, nil
+	}
 }
 
 // Get a string from a list of results at a given position
@@ -75,15 +89,12 @@ func TestConnection() (err error) {
 func TestConnectionHost(hostColonPort string) (err error) {
 	// Connect to the given host:port
 	conn, err := newRedisConnectionTo(hostColonPort)
-	if conn != nil {
-		conn.Close()
-	}
 	defer func() {
+		if conn != nil {
+			conn.Close()
+		}
 		if r := recover(); r != nil {
 			err = errors.New("Could not connect to redis server: " + hostColonPort)
-			if conn != nil {
-				conn.Close()
-			}
 		}
 	}()
 	return err
