@@ -289,7 +289,7 @@ func (rl *List) GetLastN(n int) ([]string, error) {
 	return strs, err
 }
 
-// Remove the first occurence of an element from the list
+// Remove the first occurrence of an element from the list
 func (rl *List) RemoveElement(value string) error {
 	conn := rl.pool.Get(rl.dbindex)
 	_, err := conn.Do("LREM", rl.id, value)
