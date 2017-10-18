@@ -91,7 +91,7 @@ If there are timeout issues when connecting to Redis, try consulting the Redis l
 Version, license and author
 ---------------------------
 
-* Version: 2.0
+* Version: 2.3
 * License: MIT
 * Author: Alexander F Rødseth
 
