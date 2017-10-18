@@ -12,7 +12,7 @@ import (
 
 const (
 	// Version number. Stable API within major version numbers.
-	Version = 2.1
+	Version = 2.2
 
 	// The default [url]:port that Redis is running at
 	defaultRedisServer = ":6379"
@@ -523,6 +523,28 @@ func (rkv *KeyValue) Set(key, value string) error {
 	conn := rkv.pool.Get(rkv.dbindex)
 	_, err := conn.Do("SET", rkv.id+":"+key, value)
 	return err
+}
+
+// Set a key and value, with expiry
+func (rkv *KeyValue) SetExpire(key, value string, expire time.Duration) error {
+	conn := rkv.pool.Get(rkv.dbindex)
+	// Convert from nanoseconds to milliseconds
+	expireMilliseconds := expire.Nanoseconds() / 1000000
+	// Set the value, together with an expiry time, given in milliseconds
+	_, err := conn.Do("SET", rkv.id+":"+key, value, "PX", expireMilliseconds)
+	return err
+}
+
+// TimeToLive returns how long a key has to live until it expires
+// Returns a duration of 0 when the time has passed
+func (rkv *KeyValue) TimeToLive(key string) (time.Duration, error) {
+	conn := rkv.pool.Get(rkv.dbindex)
+	ttlSecondsInterface, err := conn.Do("TTL", rkv.id+":"+key)
+	if err != nil || ttlSecondsInterface.(int64) <= 0 {
+		return time.Duration(0), err
+	}
+	ns := time.Duration(ttlSecondsInterface.(int64)) * time.Second
+	return ns, nil
 }
 
 // Get a value given a key

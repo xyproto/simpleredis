@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 	"testing"
+	"time"
 )
 
 var pool *ConnectionPool
@@ -12,7 +13,7 @@ var pool *ConnectionPool
 func TestLocalConnection(t *testing.T) {
 	if err := TestConnection(); err != nil {
 		if strings.HasSuffix(err.Error(), "i/o timeout") {
-			log.Println("Try the 'latency doctor' command in the redis-cli if i/o timeouts is a common problem.")
+			log.Println("Try the 'latency doctor' command in the redis-cli if I/O timeouts happens often.")
 		}
 		t.Errorf(err.Error())
 	}
@@ -154,4 +155,85 @@ func TestTwoFields(t *testing.T) {
 func TestICreator(t *testing.T) {
 	// Check if the struct comforms to ICreator
 	var _ pinterface.ICreator = NewCreator(pool, 1)
+}
+
+func TestKeyValue(t *testing.T) {
+	const (
+		kvname  = "kv_abc123_test_test_test_123abc"
+		testkey = "token"
+		testval = "123abc"
+		fakekey = "hurdygurdy32"
+	)
+	kv := NewKeyValue(pool, kvname)
+
+	// Check that the list qualifies for the IList interface
+	var _ pinterface.IKeyValue = kv
+
+	kv.SelectDatabase(1)
+
+	if err := kv.Set(testkey, testval); err != nil {
+		t.Errorf("Error, could not set key and value! %s", err.Error())
+	}
+	retval, err := kv.Get(testkey)
+	if err != nil {
+		t.Errorf("Error, could not get value! %s", err.Error())
+	} else if retval != testval {
+		t.Errorf("Error, got the wrong return value! %s", retval)
+	}
+	if err := kv.Del(testkey); err != nil {
+		t.Errorf("Error, could not remove key! %s", err.Error())
+	}
+	_, err = kv.Get(testkey)
+	if err == nil {
+		t.Errorf("Error, key should be gone #1! %s", err.Error())
+	}
+	_, err = kv.Get(fakekey)
+	if err == nil {
+		t.Errorf("Error, key should be gone #2! %s", err.Error())
+	}
+	err = kv.Remove()
+	if err != nil {
+		t.Errorf("Error, could not remove KeyValue! %s", err.Error())
+	}
+}
+
+func TestExpire(t *testing.T) {
+	const (
+		kvname  = "kv_abc123_test_test_test_123abc_exp"
+		testkey = "token"
+		testval = "123abc"
+	)
+	kv := NewKeyValue(pool, kvname)
+
+	// Check that the list qualifies for the IList interface
+	var _ pinterface.IKeyValue = kv
+
+	kv.SelectDatabase(1)
+
+	if err := kv.SetExpire(testkey, testval, time.Second*1); err != nil {
+		t.Errorf("Error, could not set key and value! %s", err.Error())
+	}
+	retval, err := kv.Get(testkey)
+	if err != nil {
+		t.Errorf("Error, could not get value! %s", err.Error())
+	} else if retval != testval {
+		t.Errorf("Error, got the wrong return value! %s", retval)
+	}
+	ttl, err := kv.TimeToLive(testkey)
+	if err != nil {
+		t.Errorf("Error, retrieving time to live: %s", err.Error())
+	} else if ttl.String() != "1s" {
+		t.Errorf("Error, there should only be 1 second left, but there is: %s!", ttl.String())
+	}
+	//log.Println("Time left:", ttl)
+	time.Sleep(1 * time.Second)
+
+	_, err2 := kv.Get(testkey)
+	if err2 == nil {
+		t.Errorf("Error, key should be gone! %s", testkey)
+	}
+	err = kv.Remove()
+	if err != nil {
+		t.Errorf("Error, could not remove KeyValue! %s", err.Error())
+	}
 }
