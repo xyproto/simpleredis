@@ -431,6 +431,39 @@ func (rh *HashMap) Set(elementid, key, value string) error {
 	return err
 }
 
+// Given an element id, set a key and a value together with an expiration time
+func (rh *HashMap) SetExpire(elementid, key, value string, expire time.Duration) error {
+	conn := rh.pool.Get(rh.dbindex)
+	if _, err := conn.Do("HSET", rh.id+":"+elementid, key, value); err != nil {
+		return err
+	}
+	// No EXPIRE in Redis for hash keys, as far as I can tell from the documentation.
+	// This is the manual way.
+	go func() {
+		time.Sleep(expire)
+		rh.DelKey(elementid, key)
+	}()
+	// Set the elementid to expire in the given duration (as milliseconds)
+	//expireMilliseconds := expire.Nanoseconds() / 1000000
+	//if _, err := conn.Do("PEXPIRE", rh.id+":"+elementid, expireMilliseconds); err != nil {
+	//	return err
+	//}
+	return nil
+}
+
+// Commented out because this would only return TTL for the elementid, not for the key
+// TimeToLive returns how long a key has to live until it expires
+// Returns a duration of 0 when the time has passed
+//func (rh *HashMap) TimeToLive(elementid string) (time.Duration, error) {
+//	conn := rh.pool.Get(rh.dbindex)
+//	ttlSecondsInterface, err := conn.Do("TTL", rh.id+":"+elementid)
+//	if err != nil || ttlSecondsInterface.(int64) <= 0 {
+//		return time.Duration(0), err
+//	}
+//	ns := time.Duration(ttlSecondsInterface.(int64)) * time.Second
+//	return ns, nil
+//}
+
 // Get a value from a hashmap given the element id (for instance a user id) and the key (for instance "password")
 func (rh *HashMap) Get(elementid, key string) (string, error) {
 	conn := rh.pool.Get(rh.dbindex)

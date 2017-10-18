@@ -237,3 +237,38 @@ func TestExpire(t *testing.T) {
 		t.Errorf("Error, could not remove KeyValue! %s", err.Error())
 	}
 }
+
+func TestExpireHashMapKey(t *testing.T) {
+	const (
+		hname    = "hk_abc123_test_test_test_123abc_exp"
+		testkey  = "token"
+		testval  = "123abc"
+		username = "bob"
+	)
+	hm := NewHashMap(pool, hname)
+
+	// Check that the list qualifies for the IList interface
+	var _ pinterface.IHashMap = hm
+
+	hm.SelectDatabase(1)
+
+	if err := hm.SetExpire(username, testkey, testval, time.Second*1); err != nil {
+		t.Errorf("Error, could not set key and value! %s", err.Error())
+	}
+	retval, err := hm.Get(username, testkey)
+	if err != nil {
+		t.Errorf("Error, could not get value! %s", err.Error())
+	} else if retval != testval {
+		t.Errorf("Error, got the wrong return value! %s", retval)
+	}
+	time.Sleep(1 * time.Second)
+
+	_, err2 := hm.Get(username, testkey)
+	if err2 == nil {
+		t.Errorf("Error, key should be gone! %s", testkey)
+	}
+	err = hm.Remove()
+	if err != nil {
+		t.Errorf("Error, could not remove Hash! %s", err.Error())
+	}
+}
