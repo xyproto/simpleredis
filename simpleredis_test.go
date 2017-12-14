@@ -225,8 +225,8 @@ func TestExpire(t *testing.T) {
 	} else if ttl.String() != "1s" {
 		t.Errorf("Error, there should only be 1 second left, but there is: %s!", ttl.String())
 	}
-	//log.Println("Time left:", ttl)
-	time.Sleep(1 * time.Second)
+	// Wait a bit extra, testing on external hosts may take some time
+	time.Sleep(3 * time.Second)
 
 	_, err2 := kv.Get(testkey)
 	if err2 == nil {
@@ -261,7 +261,8 @@ func TestExpireHashMapKey(t *testing.T) {
 	} else if retval != testval {
 		t.Errorf("Error, got the wrong return value! %s", retval)
 	}
-	time.Sleep(1 * time.Second)
+	// Wait a bit more than just 1 second. Testing on Travis can take some time.
+	time.Sleep(3 * time.Second)
 
 	_, err2 := hm.Get(username, testkey)
 	if err2 == nil {
