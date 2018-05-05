@@ -7,18 +7,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 )
 
 const (
 	// Version number. Stable API within major version numbers.
-	Version = 2.3
+	Version = 2.4
 
 	// The default [url]:port that Redis is running at
 	defaultRedisServer = ":6379"
 )
 
-// Common for each of the redis datastructures used here
+// Common for each of the Redis data structures used here
 type redisDatastructure struct {
 	pool    *ConnectionPool
 	id      string

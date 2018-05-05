@@ -1,11 +1,12 @@
 package simpleredis
 
 import (
-	"github.com/xyproto/pinterface"
 	"log"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/xyproto/pinterface"
 )
 
 var pool *ConnectionPool

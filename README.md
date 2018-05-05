@@ -19,7 +19,7 @@ Features and limitations
 
 * Supports simple use of lists, hashmaps, sets and key/values
 * Deals mainly with strings
-* Uses the [redigo](https://github.com/garyburd/redigo) package
+* Uses the [redigo](https://github.com/gomodule/redigo) package
 
 
 Example usage
@@ -91,7 +91,6 @@ If there are timeout issues when connecting to Redis, try consulting the Redis l
 Version, license and author
 ---------------------------
 
-* Version: 2.3
+* Version: 2.4
 * License: MIT
 * Author: Alexander F Rødseth
-
