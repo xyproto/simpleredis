@@ -95,7 +95,7 @@ Official packages
 Debian:
 
 * [golang-github-xyproto-simpleredis](https://packages.debian.org/source/buster/misc/golang-github-xyproto-simpleredis)
-* [golang-github-xyproto-simpleredis-dev](https://packages.debian.org/source/buster/misc/golang-github-xyproto-simpleredis-dev)
+* [golang-github-xyproto-simpleredis-dev](https://packages.debian.org/buster/golang-github-xyproto-simpleredis-dev)
 
 
 Version, license and author
