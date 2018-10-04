@@ -274,3 +274,61 @@ func TestExpireHashMapKey(t *testing.T) {
 		t.Errorf("Error, could not remove Hash! %s", err.Error())
 	}
 }
+
+func TestHashMap(t *testing.T) {
+	const (
+		hashname  = "abc123_test_test_test_123abc_123"
+		testid    = "bob"
+		testidInv = "b:ob"
+		testkey   = "password"
+		testvalue = "hunter1"
+	)
+
+	hash := NewHashMap(pool, hashname)
+
+	// Check that the list qualifies for the IList interface
+	var _ pinterface.IHashMap = hash
+
+	hash.SelectDatabase(1)
+	hash.Clear()
+
+	//if err := hash.Set(testidInv, testkey, testvalue); err == nil {
+	//	t.Error("Should not be allowed to use an element id with \":\"")
+	//}
+	if err := hash.Set(testid, testkey, testvalue); err != nil {
+		t.Errorf("Error, could not add item to hash map! %s", err.Error())
+	}
+	value2, err := hash.Get(testid, testkey)
+	if err != nil {
+		t.Error(err)
+	}
+	if value2 != testvalue {
+		t.Errorf("Got a different value in return! %s != %s", value2, testvalue)
+	}
+	items, err := hash.GetAll()
+	if err != nil {
+		t.Error(err)
+	}
+	if len(items) != 1 {
+		t.Errorf("Error, wrong hash map length! %v", len(items))
+	}
+	if (len(items) > 0) && (items[0] != testid) {
+		t.Errorf("Error, wrong hash map id! %v", items)
+	}
+	props, err := hash.Properties(testid)
+	if err != nil {
+		t.Error(err)
+	}
+	// only "password"
+	if len(props) != 1 {
+		t.Errorf("Error, wrong properties: %v\n", props)
+	}
+	if props[0] != "password" {
+		t.Errorf("Error, wrong properties: %v\n", props)
+	}
+
+	err = hash.Remove()
+	if err != nil {
+		t.Errorf("Error, could not remove hash map! %s", err.Error())
+	}
+}

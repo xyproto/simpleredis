@@ -484,6 +484,19 @@ func (rh *HashMap) Has(elementid, key string) (bool, error) {
 	return redis.Bool(retval, err)
 }
 
+// Properties returns the sub-keys for a given key.
+// This can be used for listing the available properties for a username,
+// for example.
+func (rh *HashMap) Properties(elementid string) ([]string, error) {
+	conn := rh.pool.Get(rh.dbindex)
+	result, err := redis.Values(conn.Do("HKEYS", rh.id+":"+elementid))
+	strs := make([]string, len(result))
+	for i := 0; i < len(result); i++ {
+		strs[i] = getString(result, i)
+	}
+	return strs, err
+}
+
 // Check if a given elementid exists as a hash map at all
 func (rh *HashMap) Exists(elementid string) (bool, error) {
 	// TODO: key is not meant to be a wildcard, check for "*"
