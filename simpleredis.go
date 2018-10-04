@@ -12,7 +12,7 @@ import (
 
 const (
 	// Version number. Stable API within major version numbers.
-	Version = 2.4
+	Version = 2.5.0
 
 	// The default [url]:port that Redis is running at
 	defaultRedisServer = ":6379"
