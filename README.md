@@ -101,6 +101,6 @@ Debian:
 Version, license and author
 ---------------------------
 
-* Version: 2.5.0
+* Version: 2.5.1
 * License: MIT
 * Author: Alexander F Rødseth
