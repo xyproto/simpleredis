@@ -1,0 +1,5 @@
+# github.com/gomodule/redigo v2.0.0+incompatible
+github.com/gomodule/redigo/redis
+github.com/gomodule/redigo/internal
+# github.com/xyproto/pinterface v0.0.0-20170615103324-05fa0e308066
+github.com/xyproto/pinterface
