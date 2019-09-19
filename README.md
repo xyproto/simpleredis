@@ -89,15 +89,15 @@ Timeout issues
 If there are timeout issues when connecting to Redis, try consulting the Redis latency doctor on the server by running `redis-cli` and then `latency doctor`.
 
 
-Distro packages
----------------
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/go:github-xyproto-simpleredis.svg)](https://repology.org/project/go:github-xyproto-simpleredis/versions)
-
-
 Version, license and author
 ---------------------------
 
 * Version: 2.6.0
 * License: MIT
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
+
+
+Packaging status
+----------------
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/go:github-xyproto-simpleredis.svg)](https://repology.org/project/go:github-xyproto-simpleredis/versions)
