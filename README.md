@@ -22,12 +22,6 @@ Features and limitations
 * Uses the [redigo](https://github.com/gomodule/redigo) package
 
 
-Packaging status
-----------------
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/go:github-xyproto-simpleredis.svg)](https://repology.org/project/go:github-xyproto-simpleredis/versions)
-
-
 Example usage
 -------------
 
@@ -95,13 +89,10 @@ Timeout issues
 If there are timeout issues when connecting to Redis, try consulting the Redis latency doctor on the server by running `redis-cli` and then `latency doctor`.
 
 
-Official packages
------------------
+Distro packages
+---------------
 
-Debian:
-
-* [golang-github-xyproto-simpleredis](https://packages.debian.org/source/buster/misc/golang-github-xyproto-simpleredis)
-* [golang-github-xyproto-simpleredis-dev](https://packages.debian.org/buster/golang-github-xyproto-simpleredis-dev)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/go:github-xyproto-simpleredis.svg)](https://repology.org/project/go:github-xyproto-simpleredis/versions)
 
 
 Version, license and author
