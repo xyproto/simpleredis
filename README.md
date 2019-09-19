@@ -22,6 +22,12 @@ Features and limitations
 * Uses the [redigo](https://github.com/gomodule/redigo) package
 
 
+Packaging status
+----------------
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/go:github-xyproto-simpleredis.svg)](https://repology.org/project/go:github-xyproto-simpleredis/versions)
+
+
 Example usage
 -------------
 
