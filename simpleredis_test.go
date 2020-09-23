@@ -57,7 +57,7 @@ func TestList(t *testing.T) {
 	if err := list.Add(testdata); err != nil {
 		t.Errorf("Error, could not add item to list! %s", err.Error())
 	}
-	items, err := list.GetAll()
+	items, err := list.All()
 	if err != nil {
 		t.Errorf("Error, could not retrieve list! %s", err.Error())
 	}
@@ -305,7 +305,7 @@ func TestHashMap(t *testing.T) {
 	if value2 != testvalue {
 		t.Errorf("Got a different value in return! %s != %s", value2, testvalue)
 	}
-	items, err := hash.GetAll()
+	items, err := hash.All()
 	if err != nil {
 		t.Error(err)
 	}
