@@ -1,13 +1,17 @@
 Simple Redis
 ============
 
-[![Build Status](https://travis-ci.com/xyproto/simpleredis.svg?branch=master)](https://travis-ci.com/xyproto/simpleredis)
 [![GoDoc](https://godoc.org/github.com/xyproto/simpleredis?status.svg)](http://godoc.org/github.com/xyproto/simpleredis)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xyproto/simpleredis)](https://goreportcard.com/report/github.com/xyproto/simpleredis)
 
 Easy way to use Redis from Go.
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/go:github-xyproto-simpleredis.svg)](https://repology.org/project/go:github-xyproto-simpleredis/versions)
+
+Dependencies
+------------
+
+Requires Go 1.17 or later.
 
 Online API Documentation
 ------------------------
@@ -93,6 +97,6 @@ If there are timeout issues when connecting to Redis, try consulting the Redis l
 Version, license and author
 ---------------------------
 
-* Version: 2.6.1
-* License: MIT
+* Version: 2.6.2
+* License: BSD-3
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
