@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/xyproto/simpleredis"
+	"github.com/xyproto/simpleredis/v2"
 )
 
 func main() {

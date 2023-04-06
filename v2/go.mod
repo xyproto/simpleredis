@@ -1,4 +1,4 @@
-module github.com/xyproto/simpleredis
+module github.com/xyproto/simpleredis/v2
 
 go 1.17
 

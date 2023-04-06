@@ -36,7 +36,7 @@ package main
 import (
     "log"
 
-    "github.com/xyproto/simpleredis"
+    "github.com/xyproto/simpleredis/v2"
 )
 
 func main() {
@@ -97,6 +97,6 @@ If there are timeout issues when connecting to Redis, try consulting the Redis l
 Version, license and author
 ---------------------------
 
-* Version: 2.6.2
+* Version: 2.6.3
 * License: BSD-3
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
