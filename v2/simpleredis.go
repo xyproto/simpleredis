@@ -201,7 +201,7 @@ func (rl *List) SelectDatabase(dbindex int) {
 // Returns the element at index index in the list
 func (rl *List) Get(index int64) (string, error) {
 	conn := rl.pool.Get(rl.dbindex)
-	result, err := conn.Do("LINDEX", rl.id)
+	result, err := conn.Do("LINDEX", rl.id, index)
 	if err != nil {
 		panic(err)
 	}
