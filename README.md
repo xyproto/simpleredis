@@ -45,7 +45,7 @@ func main() {
         log.Fatalln("Could not connect to Redis. Is the service up and running?")
     }
 
-    // Use instead for testing if a different host/port is up.
+    // For checking if a Redis server on a specific host:port is up.
     // simpleredis.TestConnectionHost("localhost:6379")
 
     // Create a connection pool, connect to the given redis server
