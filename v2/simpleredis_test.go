@@ -16,13 +16,13 @@ func TestLocalConnection(t *testing.T) {
 		if strings.HasSuffix(err.Error(), "i/o timeout") {
 			log.Println("Try the 'latency doctor' command in the redis-cli if I/O timeouts happens often.")
 		}
-		t.Errorf(err.Error())
+		t.Error(err)
 	}
 }
 
 func TestRemoteConnection(t *testing.T) {
 	if err := TestConnectionHost("foobared@ :6379"); err != nil {
-		t.Errorf(err.Error())
+		t.Error(err)
 	}
 }
 
