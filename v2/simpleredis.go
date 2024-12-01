@@ -45,6 +45,8 @@ var (
 	// How many connections should stay ready for requests, at a maximum?
 	// When an idle connection is used, new idle connections are created.
 	maxIdleConnections = 3
+
+	ErrNotFound = errors.New("not found")
 )
 
 /* --- Helper functions --- */
@@ -553,29 +555,46 @@ func (rh *HashMap) GetAll() ([]string, error) {
 	return rh.All()
 }
 
-// Find a key by value. This can be useful for finding a username for an email property, for instance.
-func (rh *HashMap) FindKeyByValue(elementid, value string) (string, error) {
+// FindIDByFieldValue searches for an element ID (e.g., username) where the specified field has the specified value.
+// It returns the element ID if found, or an error if not.
+func (rh *HashMap) FindIDByFieldValue(field, value string) (string, error) {
 	conn := rh.pool.Get(rh.dbindex)
-	script := redis.NewScript(1, `
-        local hash = KEYS[1]
-        local searchValue = ARGV[1]
-        local keys = redis.call('HKEYS', hash)
-        for _, key in ipairs(keys) do
-            local val = redis.call('HGET', hash, key)
-            if val == searchValue then
-                return key
-            end
-        end
-        return nil
-    `)
-	// Execute the script with the hash map key and the value to search
-	result, err := redis.String(script.Do(conn, rh.id+":"+elementid, value))
-	if err == redis.ErrNil { // not found
-		return "", nil
-	} else if err != nil {
-		return "", err
+	defer conn.Close()
+
+	var cursor int64 = 0
+	pattern := rh.id + ":*"
+
+	for {
+		// Use SCAN to iterate over keys matching the pattern
+		res, err := redis.Values(conn.Do("SCAN", cursor, "MATCH", pattern, "COUNT", 1024))
+		if err != nil {
+			return "", err
+		}
+		// Parse the SCAN response
+		var keys []string
+		_, err = redis.Scan(res, &cursor, &keys)
+		if err != nil {
+			return "", err
+		}
+		// Iterate over the keys
+		for _, key := range keys {
+			// Get the value of the specified field
+			val, err := redis.String(conn.Do("HGET", key, field))
+			if err != nil && err != redis.ErrNil {
+				return "", err
+			}
+			if val == value {
+				// Extract the element ID from the key
+				elementID := strings.TrimPrefix(key, rh.id+":")
+				return elementID, nil
+			}
+		}
+		// If cursor is 0, the iteration is complete
+		if cursor == 0 {
+			break
+		}
 	}
-	return result, nil
+	return "", ErrNotFound
 }
 
 // Remove a key for an entry in a hashmap (for instance the email field for a user)

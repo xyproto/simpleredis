@@ -333,58 +333,55 @@ func TestHashMap(t *testing.T) {
 	}
 }
 
-func TestHashMapFindByValue(t *testing.T) {
+func TestFindIDByFieldValue(t *testing.T) {
 	const (
-		hashname      = "abc123_test_test_test_123abc_123"
-		elementID     = "bob"
-		keyEmail      = "email"
-		valueEmail    = "bob@zombo.com"
-		keyUsername   = "username"
-		valueUsername = "bob"
+		hashname         = "test_users_hashmap"
+		elementID1       = "user1"
+		elementID2       = "user2"
+		elementID3       = "user3"
+		fieldEmail       = "email"
+		emailValue1      = "user1@example.com"
+		emailValue2      = "user2@example.com"
+		emailValue3      = "user3@example.com"
+		searchEmail      = "user2@example.com"
+		nonExistentEmail = "nonexistent@example.com"
 	)
-
-	// Create a new connection pool
-	pool := NewConnectionPool()
-	defer pool.Close()
 
 	// Create a new HashMap instance
 	hash := NewHashMap(pool, hashname)
 	hash.SelectDatabase(1)
+	defer hash.Remove() // Ensure cleanup after the test
 
-	// Ensure the hash map is clean before the test
-	if err := hash.Remove(); err != nil {
-		t.Errorf("Error removing hash map: %v", err)
+	// Set up test data
+	if err := hash.Set(elementID1, fieldEmail, emailValue1); err != nil {
+		t.Fatalf("Error setting email for %s: %v", elementID1, err)
+	}
+	if err := hash.Set(elementID2, fieldEmail, emailValue2); err != nil {
+		t.Fatalf("Error setting email for %s: %v", elementID2, err)
+	}
+	if err := hash.Set(elementID3, fieldEmail, emailValue3); err != nil {
+		t.Fatalf("Error setting email for %s: %v", elementID3, err)
 	}
 
-	// Set key-value pairs for the elementID
-	if err := hash.Set(elementID, keyEmail, valueEmail); err != nil {
-		t.Errorf("Error setting email: %v", err)
-	}
-	if err := hash.Set(elementID, keyUsername, valueUsername); err != nil {
-		t.Errorf("Error setting username: %v", err)
-	}
-
-	// Use FindKeyByValue to find the key associated with the email value
-	foundKey, err := hash.FindKeyByValue(elementID, valueEmail)
+	// Test finding an existing element ID by email
+	foundID, err := hash.FindIDByFieldValue(fieldEmail, searchEmail)
 	if err != nil {
-		t.Errorf("Error finding key by value: %v", err)
-	} else if foundKey != keyEmail {
-		t.Errorf("Expected to find key '%s', but found '%s'", keyEmail, foundKey)
+		t.Errorf("Error finding element ID by field value: %v", err)
+	} else if foundID != elementID2 {
+		t.Errorf("Expected to find element ID '%s', but found '%s'", elementID2, foundID)
 	} else {
-		t.Logf("Successfully found key '%s' for value '%s'", foundKey, valueEmail)
+		t.Logf("Successfully found element ID '%s' for email '%s'", foundID, searchEmail)
 	}
 
-	// Retrieve the username using the found key (if needed)
-	retrievedUsername, err := hash.Get(elementID, keyUsername)
-	if err != nil {
-		t.Errorf("Error getting username: %v", err)
-	} else if retrievedUsername != valueUsername {
-		t.Errorf("Expected username '%s', but got '%s'", valueUsername, retrievedUsername)
+	// Test searching for a non-existent email
+	_, err = hash.FindIDByFieldValue(fieldEmail, nonExistentEmail)
+	if err != ErrNotFound {
+		t.Errorf("Expected ErrNotFound for email '%s', but got error: %v", nonExistentEmail, err)
 	} else {
-		t.Logf("Successfully retrieved username '%s'", retrievedUsername)
+		t.Logf("Correctly did not find any element ID for non-existent email '%s'", nonExistentEmail)
 	}
 
-	// Clean up after the test
+	// Clean up
 	if err := hash.Remove(); err != nil {
 		t.Errorf("Error removing hash map: %v", err)
 	}
