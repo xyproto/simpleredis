@@ -515,7 +515,7 @@ func (rh *HashMap) Has(elementid, key string) (bool, error) {
 	conn := rh.pool.Get(rh.dbindex)
 	retval, err := conn.Do("HEXISTS", rh.id+":"+elementid, key)
 	if err != nil {
-		return false, err
+		panic(err)
 	}
 	return redis.Bool(retval, err)
 }
