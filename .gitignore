@@ -28,13 +28,13 @@ bin/
 *.iml
 
 # cmd directory: ignore everything except Go source files and documentation
-cmd/*/*
-!cmd/*/*.go
-!cmd/*/*.txt
-!cmd/*/*.md
-!cmd/*/*.rst
-!cmd/*/*.asciidoc
-!cmd/*/*.1*
+v2/cmd/*/*
+!v2/cmd/*/*.go
+!v2/cmd/*/*.txt
+!v2/cmd/*/*.md
+!v2/cmd/*/*.rst
+!v2/cmd/*/*.asciidoc
+!v2/cmd/*/*.1*
 
 # images not in img/
 *.bmp
@@ -47,5 +47,3 @@ cmd/*/*
 
 # Orbiton include.txt file
 include.txt
-
-cmd/example/example
