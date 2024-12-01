@@ -332,3 +332,60 @@ func TestHashMap(t *testing.T) {
 		t.Errorf("Error, could not remove hash map! %s", err.Error())
 	}
 }
+
+func TestHashMapFindByValue(t *testing.T) {
+	const (
+		hashname      = "abc123_test_test_test_123abc_123"
+		elementID     = "bob"
+		keyEmail      = "email"
+		valueEmail    = "bob@zombo.com"
+		keyUsername   = "username"
+		valueUsername = "bob"
+	)
+
+	// Create a new connection pool
+	pool := NewConnectionPool()
+	defer pool.Close()
+
+	// Create a new HashMap instance
+	hash := NewHashMap(pool, hashname)
+	hash.SelectDatabase(1)
+
+	// Ensure the hash map is clean before the test
+	if err := hash.Remove(); err != nil {
+		t.Errorf("Error removing hash map: %v", err)
+	}
+
+	// Set key-value pairs for the elementID
+	if err := hash.Set(elementID, keyEmail, valueEmail); err != nil {
+		t.Errorf("Error setting email: %v", err)
+	}
+	if err := hash.Set(elementID, keyUsername, valueUsername); err != nil {
+		t.Errorf("Error setting username: %v", err)
+	}
+
+	// Use FindKeyByValue to find the key associated with the email value
+	foundKey, err := hash.FindKeyByValue(elementID, valueEmail)
+	if err != nil {
+		t.Errorf("Error finding key by value: %v", err)
+	} else if foundKey != keyEmail {
+		t.Errorf("Expected to find key '%s', but found '%s'", keyEmail, foundKey)
+	} else {
+		t.Logf("Successfully found key '%s' for value '%s'", foundKey, valueEmail)
+	}
+
+	// Retrieve the username using the found key (if needed)
+	retrievedUsername, err := hash.Get(elementID, keyUsername)
+	if err != nil {
+		t.Errorf("Error getting username: %v", err)
+	} else if retrievedUsername != valueUsername {
+		t.Errorf("Expected username '%s', but got '%s'", valueUsername, retrievedUsername)
+	} else {
+		t.Logf("Successfully retrieved username '%s'", retrievedUsername)
+	}
+
+	// Clean up after the test
+	if err := hash.Remove(); err != nil {
+		t.Errorf("Error removing hash map: %v", err)
+	}
+}

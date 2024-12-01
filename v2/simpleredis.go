@@ -513,7 +513,7 @@ func (rh *HashMap) Has(elementid, key string) (bool, error) {
 	conn := rh.pool.Get(rh.dbindex)
 	retval, err := conn.Do("HEXISTS", rh.id+":"+elementid, key)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	return redis.Bool(retval, err)
 }
@@ -545,11 +545,37 @@ func (rh *HashMap) All() ([]string, error) {
 		strs[i] = getString(result, i)[idlen+1:]
 	}
 	return strs, err
+
 }
 
 // Deprecated
 func (rh *HashMap) GetAll() ([]string, error) {
 	return rh.All()
+}
+
+// Find a key by value. This can be useful for finding a username for an email property, for instance.
+func (rh *HashMap) FindKeyByValue(elementid, value string) (string, error) {
+	conn := rh.pool.Get(rh.dbindex)
+	script := redis.NewScript(1, `
+        local hash = KEYS[1]
+        local searchValue = ARGV[1]
+        local keys = redis.call('HKEYS', hash)
+        for _, key in ipairs(keys) do
+            local val = redis.call('HGET', hash, key)
+            if val == searchValue then
+                return key
+            end
+        end
+        return nil
+    `)
+	// Execute the script with the hash map key and the value to search
+	result, err := redis.String(script.Do(conn, rh.id+":"+elementid, value))
+	if err == redis.ErrNil { // not found
+		return "", nil
+	} else if err != nil {
+		return "", err
+	}
+	return result, nil
 }
 
 // Remove a key for an entry in a hashmap (for instance the email field for a user)
