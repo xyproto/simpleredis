@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/xyproto/pinterface"
+	"github.com/xyproto/pinterface/v2"
 )
 
 var pool *ConnectionPool
@@ -330,6 +330,56 @@ func TestHashMap(t *testing.T) {
 	err = hash.Remove()
 	if err != nil {
 		t.Errorf("Error, could not remove hash map! %s", err.Error())
+	}
+}
+
+func TestLastUpToN(t *testing.T) {
+	const listname = "test_last_up_to_n_list"
+	list := NewList(pool, listname)
+	list.SelectDatabase(1)
+	defer list.Remove()
+
+	// Add 3 items
+	for _, v := range []string{"a", "b", "c"} {
+		if err := list.Add(v); err != nil {
+			t.Fatalf("Could not add item: %s", err)
+		}
+	}
+
+	// Request more than available: should return all 3
+	items, err := list.LastUpToN(5)
+	if err != nil {
+		t.Fatalf("LastUpToN(5) error: %s", err)
+	}
+	if len(items) != 3 {
+		t.Errorf("LastUpToN(5) expected 3 items, got %d", len(items))
+	}
+
+	// Request exactly available
+	items, err = list.LastUpToN(3)
+	if err != nil {
+		t.Fatalf("LastUpToN(3) error: %s", err)
+	}
+	if len(items) != 3 {
+		t.Errorf("LastUpToN(3) expected 3 items, got %d", len(items))
+	}
+
+	// Request fewer than available
+	items, err = list.LastUpToN(2)
+	if err != nil {
+		t.Fatalf("LastUpToN(2) error: %s", err)
+	}
+	if len(items) != 2 {
+		t.Errorf("LastUpToN(2) expected 2 items, got %d", len(items))
+	}
+
+	// Request zero
+	items, err = list.LastUpToN(0)
+	if err != nil {
+		t.Fatalf("LastUpToN(0) error: %s", err)
+	}
+	if len(items) != 0 {
+		t.Errorf("LastUpToN(0) expected 0 items, got %d", len(items))
 	}
 }
 
